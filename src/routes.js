@@ -20,10 +20,10 @@ export default new Router({
 			name: "about",
 			component: ViewAbout,
 		},
-        {
-            path: "*",
-            name: "Error",
-            component: Error
-        }
+		{
+			path: "*",
+			name: "Error",
+			component: Error,
+		},
 	],
 });
