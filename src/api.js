@@ -39,8 +39,32 @@ function getAssetHistory(coinId) {
 		.then((res) => res.json())
 		.then((res) => res.data);
 }
+function getMarkets(coinId) {
+	return fetch(`${url}/assets/${coinId}/markets?limit=5`, {
+		mode: "cors",
+		method: "GET",
+		headers: {
+			Accept: "application/json",
+		},
+	})
+		.then((res) => res.json())
+		.then((res) => res.data);
+}
+function getExchange(exchangeId) {
+	return fetch(`${url}/exchanges/${exchangeId}`, {
+		mode: "cors",
+		method: "GET",
+		headers: {
+			Accept: "application/json",
+		},
+	})
+		.then((res) => res.json())
+		.then((res) => res.data);
+}
 export default {
 	getAssets,
 	getAsset,
 	getAssetHistory,
+	getMarkets,
+	getExchange,
 };

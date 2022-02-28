@@ -14,13 +14,20 @@
     "
     @click="buttonClick"
   >
-    <slot></slot>
+    <beat-loader :loading="isLoading" color="#68d391" :size="8" />
+    <slot v-if="!isLoading"></slot>
   </button>
 </template>
 
 <script>
 export default {
   name: "PxButton",
+  props: {
+    isLoading: {
+      type: Boolean,
+      default: false,
+    },
+  },
   methods: {
     buttonClick() {
       this.$emit("customClick");

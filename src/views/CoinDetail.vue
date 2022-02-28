@@ -4,7 +4,7 @@
       <bounce-loader
         :loading="isLoading"
         color="#68d391"
-        size="100"
+        :size="100"
       ></bounce-loader>
     </div>
     <template v-if="!isLoading">
@@ -96,21 +96,56 @@
         :data="history.map((h) => [h.date, parseFloat(h.priceUsd).toFixed(2)])"
       >
       </line-chart>
+      <h3 class="text-xl my-10">Mejores Ofertas de Cambio</h3>
+      <table>
+        <tr
+          v-for="m in markets"
+          :key="`${m.exchangeId}-${m.priceUsd}`"
+          class="border-b"
+        >
+          <td>
+            <b>{{ m.exchangeId }}</b>
+          </td>
+          <td>
+            {{ m.priceUsd | dollar }}
+          </td>
+          <td>{{ m.baseSymbol }} / {{ m.quoteSymbol }}</td>
+          <td>
+            <px-button
+              :is-loading="m.isLoading || false"
+              v-if="!m.url"
+              @customClick="getWebSite(m)"
+            >
+              Obtener Link
+            </px-button>
+            <a
+              v-else
+              class="hover:underline text-green-600"
+              target="_blank"
+              :href="m.url || '#'"
+            >
+              {{ m.url }}
+            </a>
+          </td>
+        </tr>
+      </table>
     </template>
   </div>
 </template>
 
 <script>
 import api from "@/api";
+import PxButton from "@/components/PxButton.vue";
 
 export default {
   name: "CoinDetail",
-
+  components: { PxButton },
   data() {
     return {
       isLoading: false,
       asset: {},
       history: [],
+      markets: [],
     };
   },
 
@@ -137,13 +172,29 @@ export default {
   },
 
   methods: {
+    getWebSite(exchange) {
+      this.$set(exchange, "isLoading", true);
+      return api
+        .getExchange(exchange.exchangeId)
+        .then((res) => {
+          this.$set(exchange, "url", res.exchangeUrl);
+        })
+        .finally(() => {
+          this.$set(exchange, "isLoading", false);
+        });
+    },
     getCoin() {
       const coinId = this.$route.params.id;
       this.isLoading = true;
-      Promise.all([api.getAsset(coinId), api.getAssetHistory(coinId)])
-        .then(([asset, history]) => {
+      Promise.all([
+        api.getAsset(coinId),
+        api.getAssetHistory(coinId),
+        api.getMarkets(coinId),
+      ])
+        .then(([asset, history, markets]) => {
           this.asset = asset;
           this.history = history;
+          this.markets = markets;
         })
         .finally(() => (this.isLoading = false));
     },
