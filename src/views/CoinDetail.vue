@@ -1,6 +1,13 @@
 <template>
   <div class="flex-col">
-    <template v-if="asset.id">
+    <div class="flex justify-center">
+      <bounce-loader
+        :loading="isLoading"
+        color="#68d391"
+        size="100"
+      ></bounce-loader>
+    </div>
+    <template v-if="!isLoading">
       <div class="flex flex-col sm:flex-row justify-around items-center">
         <div class="flex flex-col items-center">
           <img
@@ -56,7 +63,6 @@
           >
             Cambiar
           </button>
-
           <div class="flex flex-row my-5">
             <label class="w-full" for="convertValue">
               <input
@@ -82,6 +88,14 @@
           <span class="text-xl"></span>
         </div>
       </div>
+      <line-chart
+        class="my-10"
+        :colors="['orange']"
+        :min="min"
+        :max="max"
+        :data="history.map((h) => [h.date, parseFloat(h.priceUsd).toFixed(2)])"
+      >
+      </line-chart>
     </template>
   </div>
 </template>
@@ -94,6 +108,7 @@ export default {
 
   data() {
     return {
+      isLoading: false,
       asset: {},
       history: [],
     };
@@ -105,13 +120,11 @@ export default {
         ...this.history.map((h) => parseFloat(h.priceUsd).toFixed(2))
       );
     },
-
     max() {
       return Math.max(
         ...this.history.map((h) => parseFloat(h.priceUsd).toFixed(2))
       );
     },
-
     avg() {
       return Math.abs(
         ...this.history.map((h) => parseFloat(h.priceUsd).toFixed(2))
@@ -126,13 +139,13 @@ export default {
   methods: {
     getCoin() {
       const coinId = this.$route.params.id;
-
-      Promise.all([api.getAsset(coinId), api.getAssetHistory(coinId)]).then(
-        ([asset, history]) => {
+      this.isLoading = true;
+      Promise.all([api.getAsset(coinId), api.getAssetHistory(coinId)])
+        .then(([asset, history]) => {
           this.asset = asset;
           this.history = history;
-        }
-      );
+        })
+        .finally(() => (this.isLoading = false));
     },
   },
 };
