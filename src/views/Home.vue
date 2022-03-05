@@ -3,7 +3,7 @@
     <bounce-loader
       :loading="isLoading"
       color="#68d391"
-      size="100"
+      :size="100"
     ></bounce-loader>
     <PxAssetsTable v-if="!isLoading" :assets="assets"></PxAssetsTable>
   </div>
