@@ -148,7 +148,6 @@ export default {
       markets: [],
     };
   },
-
   computed: {
     min() {
       return Math.min(
@@ -166,11 +165,14 @@ export default {
       );
     },
   },
-
+  watch: {
+    $route() {
+      this.getCoin();
+    },
+  },
   created() {
     this.getCoin();
   },
-
   methods: {
     getWebSite(exchange) {
       this.$set(exchange, "isLoading", true);
