@@ -15,10 +15,17 @@
     @click="buttonClick"
   >
     <beat-loader :loading="isLoading" color="#68d391" :size="8" />
-    <slot v-if="!isLoading"></slot>
+    <p v-show="!isLoading">
+      <slot></slot>
+    </p>
   </button>
 </template>
-
+<style scoped>
+td {
+  padding: 10px;
+  text-align: center;
+}
+</style>
 <script>
 export default {
   name: "PxButton",
